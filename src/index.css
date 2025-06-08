@@ -1,0 +1,73 @@
+/*eslint-disable*/
+@import "tailwindcss";
+:root {
+
+  --primary-color: #0c1467;
+  --secondary-color: #ebebeb;
+  --third-color: #fff;
+  --hover-link: #c53a54;
+  --secondary-hover: #d6d6d6;
+  --border-search: #ddd;
+  --bg-search: #efefef;
+  --subtitle:#666666;
+}
+body{
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+@layer components {
+  .container {
+    @apply mx-auto w-full px-4;
+  }
+
+  @screen sm {
+    .container {
+      max-width: 640px;
+    }
+  }
+
+  @screen md {
+    .container {
+      max-width: 768px;
+    }
+  }
+
+  @screen lg {
+    .container {
+      max-width: 50%;
+    }
+  }
+}
+
+.active {
+  @apply font-bold text-[var(--hover-link)] duration-700;
+}
+
+/* common */
+.section-title {
+  @apply font-bold text-3xl text-[var(--primary-color)];
+}
+.section-subtitle{
+  @apply my-2 font-medium text-[var(--subtitle)];
+}
+
+
+/* card */
+.card {
+  @apply bg-white p-8 rounded-2xl shadow-md text-center transition-all hover:shadow-lg;
+}
+.card-icon {
+  @apply bg-[var(--secondary-color)] rounded-full p-6 mx-auto w-24 h-24 flex items-center justify-center;
+}
+.card-icon-svg {
+  @apply w-12 h-12 text-[var(--primary-color)];
+}
+.card-title {
+  @apply text-xl font-bold text-[var(--primary-color)] mt-6;
+}
+.card-description {
+  @apply text-[var(--subtitle)] mt-2;
+}
+
+.icon-style{
+  @apply bg-[var(--secondary-color)] cursor-pointer p-3 hover:bg-gray-300 duration-500 text-[var(--primary-color)] rounded-full
+}
