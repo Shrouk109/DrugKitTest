@@ -21,35 +21,35 @@ export default function Navbar() {
     <>
       <nav>
         <div
-          className="container w-[80%] md:w-[74%] h-[443px] bg-cover bg-center relative"
-          style={{ backgroundImage: `url(${bgNavbar})` }}
+          className="container max-w-8xl bg-cover bg-center relative"
+          // style={{ backgroundImage: `url(${bgNavbar})` }}
         >
           <div className="flex justify-between items-center py-4 px-4">
             {/* Logo */}
             <div className="logo">
-              <img src={logo} width={120} alt="logo" />
+              <img src={"/logo.png"} className="w-32" alt="logo" />
             </div>
 
             {/* Desktop Links */}
-            <ul className="hidden md:flex gap-x-16 text-white font-semibold">
+            <ul className="hidden md:flex gap-x-16 text-gray-700 font-semibold">
               <li>
-                <NavLink to="/" className="hover:text-gray-300">
+                <NavLink to="/" className="hover:text-gray-600">
                   Home
                 </NavLink>
               </li>
-             
+
               <li>
-                <NavLink to="/about" className="hover:text-gray-300">
+                <NavLink to="/about" className="hover:text-gray-600">
                   About
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/contact" className="hover:text-gray-300">
+                <NavLink to="/contact" className="hover:text-gray-600">
                   Contact
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/downloadApp" className="hover:text-gray-300">
+                <NavLink to="/downloadApp" className="hover:text-gray-600">
                   Download App
                 </NavLink>
               </li>

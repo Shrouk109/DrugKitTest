@@ -37,7 +37,7 @@ export default function Layout() {
   return (
     <>
       {!isAuthPage && <Navbar />}
-      <Outlet></Outlet>
+      <Outlet />
       {!isAuthPage && <Footer />}
       {!isAuthPage && <ChatBot />}
     </>
