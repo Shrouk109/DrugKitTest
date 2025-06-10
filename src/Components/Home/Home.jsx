@@ -14,6 +14,10 @@ import axios from "axios";
 import Loading from "../Loading/Loading";
 import PharmacyLocator from "../PharmacyLocator/PharmacyLocator";
 import { useNavigate } from "react-router-dom";
+import { Spotlight } from "../ui/spotlight";
+import { cn } from "@/lib/utils";
+import { Search } from "lucide-react";
+import SearchToggle from "../comp-436";
 
 export default function Home() {
   const [AllCategory, setAllCategory] = useState([]);
@@ -92,26 +96,40 @@ export default function Home() {
   }, []);
 
   return (
-    <>
-      <h1 className="text-4xl pt-10 pb-5 text-center font-bold bg-gradient-to-r from-[#AA4870] from-[30%] via-[#C53A54] via-[20%] to-[#5B71C1] to-[80%] bg-clip-text text-transparent">
+    <div>
+      {/* <h1 className="text-4xl pt-10 pb-5 text-center font-bold bg-gradient-to-r from-[#AA4870] from-[30%] via-[#C53A54] via-[20%] to-[#5B71C1] to-[80%] bg-clip-text text-transparent">
         Find the Right Medicine Easily!
-      </h1>
+      </h1> */}
 
       {/* Search Input with AutoComplete */}
 
-      <div className="flex flex-col items-center mt-5 w-[90%] max-w-3xl mx-auto relative">
-        <div className="flex w-full">
-          <input
-            type="text"
-
-            placeholder="Search for a medicine or by category..."
-            className="flex-grow bg-[var(--bg-search)] border border-[var(--border-search)] border-r-0 rounded-l-full px-6 py-3 text-gray-700 placeholder-gray-500 outline-none"
+      <div className="relative w-full px-8 py-3 mx-auto">
+        <div className="relative flex py-16 w-full overflow-hidden rounded-2xl bg-[#1A2045] antialiased md:items-center md:justify-center">
+          <div
+            className={cn(
+              "pointer-events-none absolute inset-0 [background-size:40px_40px] select-none",
+              "[background-image:linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)]"
+            )}
           />
-          <button className="bg-[var(--primary-color)] text-[var(--third-color)] font-semibold px-6 py-2 rounded-r-full border border-[var(--primary-color)] border-l-0 hover:bg-[#1A237E] hover:shadow-lg cursor-pointer transition-all">
-            Search
-          </button>
-        </div>
 
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[#1A2045] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
+
+          {/* <Spotlight
+            className="-top-40 left-0 md:-top-20 md:left-60"
+            fill="white"
+          /> */}
+
+          <div className="relative flex flex-col items-center gap-14 z-10 mx-auto w-full max-w-7xl p-4 pt-20 md:pt-0">
+            <h1 className="relative z-20 bg-gradient-to-b from-slate-200 via-slate-300 to-slate-500 bg-clip-text py-8 text-6xl font-bold text-transparent">
+              Find the Right Medicine Easily!
+            </h1>
+
+            <SearchToggle />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center mt-5 w-[90%] max-w-3xl mx-auto relative">
         {/* {suggestions.length > 0 && (
           <ul className="absolute top-full mt-2 w-full bg-white border border-gray-300 rounded-lg shadow z-10 max-h-60 overflow-y-auto">
             {suggestions.map((item, index) => (
@@ -320,6 +338,6 @@ export default function Home() {
           <Slider />
         </div>
       </section>
-    </>
+    </div>
   );
 }
