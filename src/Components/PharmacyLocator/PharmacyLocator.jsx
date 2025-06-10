@@ -1,4 +1,4 @@
-/*eslint-disable*/
+/* eslint-disable */
 import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -32,29 +32,31 @@ function PharmacyLocator() {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
+          const currentLocation = { latitude, longitude };
+          setUserLocation(currentLocation);
 
-   
-          if (!userLocation) {
-            setUserLocation({ latitude, longitude });
-          }
+          const savedData = localStorage.getItem("pharmaciesData");
+          const saved = savedData ? JSON.parse(savedData) : null;
 
-          const savedPharmacies = localStorage.getItem("pharmaciesData");
-          if (savedPharmacies) {
-            setPharmacies(JSON.parse(savedPharmacies));
+          if (
+            saved &&
+            saved.location &&
+            Math.abs(saved.location.latitude - latitude) < 0.001 &&
+            Math.abs(saved.location.longitude - longitude) < 0.001
+          ) {
+            setPharmacies(saved.pharmacies);
             setLoading(false);
           } else {
             await fetchPharmacies(latitude, longitude);
           }
         },
         (error) => {
+          setLoading(false);
           if (retries > 0) {
-            setTimeout(() => {
-              getUserLocation(retries - 1);
-            }, 2000);
+            setTimeout(() => getUserLocation(retries - 1), 2000);
           } else {
-            setLoading(false);
             if (error.code === error.PERMISSION_DENIED) {
-              showToast("warning", "Please enable location services ");
+              showToast("warning", "Please enable location services");
             } else {
               showToast("error", "An error occurred while retrieving your location.");
             }
@@ -62,34 +64,37 @@ function PharmacyLocator() {
         }
       );
     } else {
-      showToast("error", "Your browser does not support geolocation ");
+      showToast("error", "Your browser does not support geolocation");
     }
   };
 
   const fetchPharmacies = async (lat, lon) => {
     try {
-      const response = await axios.get(
-        `https://drugkit.runasp.net/api/Pharmacy/nearest`,
-        {
-          params: {
-            latitude: lat,
-            longitude: lon,
-          },
-        }
-      );
+      const response = await axios.get(`https://drugkit.runasp.net/api/Pharmacy/nearest`, {
+        params: {
+          latitude: lat,
+          longitude: lon,
+        },
+      });
+
       let data = response.data;
 
       if (!data || data.length === 0) {
         showToast("info", "No pharmacies near your location");
       } else {
-       
         data.sort((a, b) => a.distance - b.distance);
-        localStorage.setItem("pharmaciesData", JSON.stringify(data));
+        localStorage.setItem(
+          "pharmaciesData",
+          JSON.stringify({
+            pharmacies: data,
+            location: { latitude: lat, longitude: lon },
+          })
+        );
         setPharmacies(data);
       }
     } catch (error) {
       console.error("Fetch Pharmacies Error:", error);
-      showToast("error", "Unable to fetch pharmacy data ");
+      showToast("error", "Unable to fetch pharmacy data");
     } finally {
       setLoading(false);
     }
@@ -113,7 +118,7 @@ function PharmacyLocator() {
                   Loading...
                 </span>
               ) : (
-                "Locate Me "
+                "Locate Me"
               )}
             </button>
           </div>
