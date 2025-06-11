@@ -1,11 +1,17 @@
 /*eslint-disable*/
 import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./App.css";
-import { createBrowserRouter, RouterProvider, useNavigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useNavigate,
+} from "react-router-dom";
 import Layout from "./Components/Layout/Layout";
 import Home from "./Components/Home/Home";
-import About from "./Components/About/About";
+import About from "./Components/About/about-new";
 import Login from "./Components/Login/Login";
 import Register from "./Components/Register/Register";
 import Contact from "./Components/Contact/Contact";
@@ -26,31 +32,98 @@ let routers = createBrowserRouter([
     path: "",
     element: <Layout />,
     children: [
-      { index: true, element: <ProtectedRoute><Home /></ProtectedRoute> },
-      { path: "about", element: <ProtectedRoute><About /></ProtectedRoute> },
+      {
+        index: true,
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "about",
+        element: (
+          <ProtectedRoute>
+            <About />
+          </ProtectedRoute>
+        ),
+      },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
-      { path: "contact", element: <ProtectedRoute><Contact /></ProtectedRoute> },
-      { path: "drugdetails/:encodedDrugName", element: <ProtectedRoute><DrugDetails /></ProtectedRoute> },
-      { path: "drugcategory/:id", element: <ProtectedRoute><AllDrugs/></ProtectedRoute> },
-      { path: "alternatives/:drugName", element: <ProtectedRoute><Alternatives/></ProtectedRoute> },
+      {
+        path: "contact",
+        element: (
+          <ProtectedRoute>
+            <Contact />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "drugdetails/:encodedDrugName",
+        element: (
+          <ProtectedRoute>
+            <DrugDetails />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "drugcategory/:id",
+        element: (
+          <ProtectedRoute>
+            <AllDrugs />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "alternatives/:drugName",
+        element: (
+          <ProtectedRoute>
+            <Alternatives />
+          </ProtectedRoute>
+        ),
+      },
       { path: "confirm-email", element: <ConfirmEmail /> },
       { path: "forgot-password", element: <ForgotPassword /> },
       { path: "check-reset-code", element: <CheckResetCode /> },
       { path: "resetpassword", element: <ResetPassword /> },
-      { path: "downloadApp", element: <ProtectedRoute><DownloadApp /></ProtectedRoute> },
-      { path: "*", element: <ProtectedRoute><NotFound /></ProtectedRoute> },
+      {
+        path: "downloadApp",
+        element: (
+          <ProtectedRoute>
+            <DownloadApp />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "*",
+        element: (
+          <ProtectedRoute>
+            <NotFound />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ]);
 
-function App() {
-  
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      cacheTime: 1000 * 60 * 10, // 10 minutes
+    },
+  },
+});
 
+function App() {
   return (
-    <UserContextProvider>
-      <RouterProvider router={routers}></RouterProvider>
-    </UserContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserContextProvider>
+        <RouterProvider router={routers}></RouterProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </UserContextProvider>
+    </QueryClientProvider>
   );
 }
 

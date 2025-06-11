@@ -18,81 +18,71 @@ import { Spotlight } from "../ui/spotlight";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import SearchToggle from "../comp-436";
+import { useAutocomplete } from "../../hooks/useAutocomplete";
+import { useAlternatives } from "../../hooks/useAlternatives";
+import { useCategories } from "../../hooks/useCategories";
 
 export default function Home() {
-  const [AllCategory, setAllCategory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedDrug, setSelectedDrug] = useState("");
-  const [alternatives, setAlternatives] = useState([]);
+  const [shouldFetchAlternatives, setShouldFetchAlternatives] = useState(false);
   const alternativesRef = useRef(null);
+  const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  async function getRecentCategory() {
-    try {
-      const response = await axios.get(
-        "https://drugkit.runasp.net/api/Category"
-      );
-      setAllCategory(response.data);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setLoading(false);
-    }
-  }
+  // Use React Query for categories
+  const { data: AllCategory = [], isLoading: loading, error } = useCategories();
+
+  // Use React Query for autocomplete
+  const { data: suggestions = [], isLoading: isLoadingSuggestions } =
+    useAutocomplete(searchTerm, showSuggestions);
+
+  // Use React Query for alternatives
+  const {
+    data: alternatives = [],
+    isLoading: isLoadingAlternatives,
+    error: alternativesError,
+  } = useAlternatives(selectedDrug, shouldFetchAlternatives);
 
   const handleSearchClick = () => {
     if (searchTerm.trim() !== "") {
-      navigate(`/alternatives/${searchTerm}`);
+      // Set the selected drug and enable fetching alternatives
+      setSelectedDrug(searchTerm.trim());
+      setShouldFetchAlternatives(true);
+      // Scroll to alternatives section
+      alternativesRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
-  async function handleSearchChange(event) {
+  function handleSearchChange(event) {
     const query = event.target.value;
     setSearchTerm(query);
-
-    if (query.length > 0) {
-      try {
-        const response = await axios.get(
-          `https://drugkit.runasp.net/api/Drug/AutoComplete?prefix=${query}`
-        );
-        setSuggestions(response.data);
-      } catch (error) {
-        console.error("حدث خطأ أثناء جلب اقتراحات الأدوية:", error);
-      }
-    } else {
-      setSuggestions([]);
-    }
+    setShowSuggestions(query.length >= 2);
   }
 
   const handleSuggestionClick = (suggestion) => {
     setSelectedDrug(suggestion);
     setSearchTerm(suggestion);
-    setSuggestions([]);
+    setShowSuggestions(false);
+    setShouldFetchAlternatives(true);
+    // Scroll to alternatives section
+    alternativesRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const getAlternatives = async (drugName) => {
-    try {
-      const response = await axios.get(
-        `https://drugkit.runasp.net/api/Drug/GetDrugsRecomendationByDrugName?drugName=${drugName}`
-      );
-      setAlternatives(response.data);
-    } catch (error) {
-      console.error("حدث خطأ أثناء جلب بدائل الدواء:", error);
-    }
-  };
-
-  // const handleSearchClick = () => {
-  //   if (searchTerm.trim() !== "") {
-  //     getAlternatives(searchTerm);
-  //     alternativesRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   }
-  // };
-
+  // Close suggestions when clicking outside
   useEffect(() => {
-    getRecentCategory();
+    const handleClickOutside = (event) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -104,15 +94,16 @@ export default function Home() {
       {/* Search Input with AutoComplete */}
 
       <div className="relative w-full px-8 py-3 mx-auto">
-        <div className="relative flex py-16 w-full overflow-hidden rounded-2xl bg-[#1A2045] antialiased md:items-center md:justify-center">
+        <div className="relative flex py-16 w-full  rounded-2xl  antialiased md:items-center md:justify-center">
           <div
             className={cn(
               "pointer-events-none absolute inset-0 [background-size:40px_40px] select-none",
-              "[background-image:linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)]"
+              "[background-image:linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)]",
+              "overflow-hidden rounded-2xl bg-[#1A2045]"
             )}
           />
 
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[#1A2045] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-2xl bg-[#1A2045] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
 
           {/* <Spotlight
             className="-top-40 left-0 md:-top-20 md:left-60"
@@ -263,7 +254,7 @@ export default function Home() {
       </section>
 
       {/* Alternatives Section */}
-      <section ref={alternativesRef} className="py-20" id="alternatives">
+      {/* <section ref={alternativesRef} className="py-20" id="alternatives">
         <div className="text-center mb-14">
           <h2 className="section-title">Find Drug Alternatives</h2>
           <p className="section-subtitle">
@@ -273,55 +264,162 @@ export default function Home() {
         </div>
 
         <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-10">
+          <div className="text-center mb-10" ref={searchInputRef}>
             <div className="flex justify-center mt-6">
-              <input
-                type="text"
-                placeholder="Enter drug name..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="px-4 py-2 rounded-l-lg border border-gray-300 outline-0 w-full max-w-lg"
-              />
-              <button
-                onClick={handleSearchClick}
-                className="bg-[var(--primary-color)] text-[var(--third-color)] cursor-pointer px-6 py-2 rounded-r-lg hover:bg-opacity-90 transition duration-200"
-              >
-                Search
-              </button>
-            </div>
-            {suggestions.length > 0 && (
-              <div className="suggestions-list mt-4 bg-white text-left border border-gray-300 rounded-lg shadow-lg max-w-lg mx-auto overflow-y-auto max-h-[300px]">
-                {suggestions.map((suggestion, index) => (
-                  <div
-                    key={index}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className="suggestion-item px-4 py-2 cursor-pointer hover:bg-gray-100"
+              <div className="relative w-full max-w-lg">
+                <input
+                  type="text"
+                  placeholder="Enter drug name..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="px-4 py-2 rounded-l-lg border border-gray-300 outline-0 w-full pr-20"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm("");
+                      setShowSuggestions(false);
+                      setShouldFetchAlternatives(false);
+                      setSelectedDrug("");
+                    }}
+                    className="absolute right-16 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                   >
-                    {suggestion}
-                  </div>
-                ))}
+                    ✕
+                  </button>
+                )}
+                <button
+                  onClick={handleSearchClick}
+                  className="absolute right-0 top-0 bottom-0 bg-[var(--primary-color)] text-[var(--third-color)] cursor-pointer px-6 rounded-r-lg hover:bg-opacity-90 transition duration-200"
+                >
+                  Search
+                </button>
               </div>
-            )}
+            </div>
+            {showSuggestions &&
+              (isLoadingSuggestions || suggestions.length > 0) && (
+                <div className="suggestions-list mt-4 bg-white text-left border border-gray-300 rounded-lg shadow-lg max-w-lg mx-auto overflow-y-auto max-h-[300px]">
+                  {isLoadingSuggestions ? (
+                    <div className="px-4 py-2 text-gray-500 flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      Loading suggestions...
+                    </div>
+                  ) : suggestions.length > 0 ? (
+                    suggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        className="suggestion-item px-4 py-2 cursor-pointer hover:bg-gray-100 transition-colors"
+                      >
+                        {suggestion}
+                      </div>
+                    ))
+                  ) : searchTerm.length >= 2 ? (
+                    <div className="px-4 py-2 text-red-500">No drugs found</div>
+                  ) : null}
+                </div>
+              )}
           </div>
 
-          {/* عرض البدائل إن وُجدت */}
-          {alternatives.length > 0 && (
-            <div className="bg-white rounded-lg shadow p-6 text-left max-w-3xl mx-auto">
-              <h3 className="text-xl font-semibold mb-4">
-                Alternatives for:{" "}
-                <span className="text-[var(--primary-color)]">
-                  {searchTerm}
-                </span>
-              </h3>
-              <ul className="list-disc list-inside space-y-2">
-                {alternatives.map((alt, index) => (
-                  <li key={index}>{alt}</li>
-                ))}
-              </ul>
+          {shouldFetchAlternatives && (
+            <div className="mt-8">
+              {isLoadingAlternatives ? (
+                <div className="bg-white rounded-lg shadow p-6 text-center max-w-3xl mx-auto">
+                  <div className="flex items-center justify-center gap-2 text-gray-500">
+                    <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    Loading alternatives for "{selectedDrug}"...
+                  </div>
+                </div>
+              ) : alternativesError ? (
+                <div className="bg-white rounded-lg shadow p-6 text-center max-w-3xl mx-auto">
+                  <div className="text-red-500 text-lg mb-4">
+                    {alternativesError.message === "Token not found"
+                      ? "Please log in to view alternatives"
+                      : "Failed to fetch alternatives"}
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShouldFetchAlternatives(false);
+                      setSelectedDrug("");
+                      setSearchTerm("");
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : alternatives.length > 0 ? (
+                <div className="bg-white rounded-lg shadow p-6 text-left max-w-3xl mx-auto">
+                  <h3 className="text-xl font-semibold mb-4">
+                    Alternatives for:{" "}
+                    <span className="text-[var(--primary-color)]">
+                      {selectedDrug}
+                    </span>
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {alternatives.map((alt, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer"
+                        onClick={() =>
+                          navigate(
+                            `/drugdetails/${encodeURIComponent(
+                              alt.name || alt
+                            )}`,
+                            {
+                              state: { categoryName: "Alternatives" },
+                            }
+                          )
+                        }
+                      >
+                        {typeof alt === "object" ? (
+                          <div>
+                            <h4 className="font-semibold text-gray-800">
+                              {alt.name}
+                            </h4>
+                            {alt.price && (
+                              <p className="text-gray-600">{alt.price} EGP</p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="font-medium text-gray-800">{alt}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 text-center">
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/alternatives/${encodeURIComponent(selectedDrug)}`
+                        )
+                      }
+                      className="bg-[var(--primary-color)] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition duration-200"
+                    >
+                      View All Alternatives
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg shadow p-6 text-center max-w-3xl mx-auto">
+                  <div className="text-gray-500 text-lg mb-4">
+                    No alternatives found for "{selectedDrug}"
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShouldFetchAlternatives(false);
+                      setSelectedDrug("");
+                      setSearchTerm("");
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    Search Again
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
-      </section>
+      </section> */}
 
       {/* How It Works Section */}
       <section className="bg-[var(--secondary-color)] py-20">
