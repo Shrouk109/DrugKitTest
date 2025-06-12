@@ -58,7 +58,10 @@ function PharmacyLocator() {
             if (error.code === error.PERMISSION_DENIED) {
               showToast("warning", "Please enable location services");
             } else {
-              showToast("error", "An error occurred while retrieving your location.");
+              showToast(
+                "error",
+                "An error occurred while retrieving your location."
+              );
             }
           }
         }
@@ -70,12 +73,15 @@ function PharmacyLocator() {
 
   const fetchPharmacies = async (lat, lon) => {
     try {
-      const response = await axios.get(`https://drugkit.runasp.net/api/Pharmacy/nearest`, {
-        params: {
-          latitude: lat,
-          longitude: lon,
-        },
-      });
+      const response = await axios.get(
+        `https://drugkit.runasp.net/api/Pharmacy/nearest`,
+        {
+          params: {
+            latitude: lat,
+            longitude: lon,
+          },
+        }
+      );
 
       let data = response.data;
 
@@ -101,64 +107,76 @@ function PharmacyLocator() {
   };
 
   return (
-    <section className="px-4">
-      <div className="flex flex-col items-center">
-        <div className="bg-white p-12 rounded-3xl shadow-xl w-full max-w-5xl">
-          <PiMapPinAreaBold className="text-[5rem] text-[#0a2e68] mx-auto mb-8" />
+    <section className="py-4 bg-[#f7faff] min-h-screen flex items-center justify-center transition-all duration-500">
+      <div className="flex flex-col items-center w-full">
+        <div className="bg-white  p-5 md:p-8 rounded-2xl shadow-lg w-full max-w-3xl border border-[#e3eaff] mx-auto">
+          <div className="flex flex-col items-center mb-8">
+            <div className="bg-[#0a2e68] rounded-full p-3 mb-3 shadow">
+              <PiMapPinAreaBold className="text-3xl md:text-4xl text-white" />
+            </div>
+            <h1 className="text-xl md:text-2xl font-bold text-[#0a2e68] mb-1 animate-fade-in">
+              Find Nearby Pharmacies
+            </h1>
+            <p className="text-gray-500 text-sm md:text-base mb-2 text-center max-w-md animate-fade-in delay-100">
+              Locate the closest pharmacies to you and get directions easily.
+            </p>
+          </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center mb-8">
             <button
               onClick={() => getUserLocation()}
               disabled={loading}
-              className="bg-[#0a2e68] cursor-pointer hover:bg-[#050b4b] text-white text-lg font-semibold py-4 px-12 rounded-full transition-all duration-300 mb-12"
+              className="bg-[#0a2e68] hover:bg-[#183a7a] text-white text-base font-semibold py-3 px-8 rounded-full transition-all duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow"
             >
               {loading ? (
-                <span className="flex items-center gap-2 justify-center">
-                  <ImSpinner2 className="animate-spin text-xl" />
-                  Loading...
+                <span className="flex items-center gap-2 justify-center animate-pulse">
+                  <ImSpinner2 className="animate-spin text-lg" />
+                  Locating...
                 </span>
               ) : (
-                "Locate Me"
+                <>
+                  <PiMapPinAreaBold className="text-lg animate-bounce" />
+                  Locate Me
+                </>
               )}
             </button>
           </div>
 
           {loading && (
-            <p className="text-center text-gray-600 mb-4">
+            <p className="text-center text-[#0a2e68] mb-4 animate-fade-in font-medium text-sm">
               Fetching nearby pharmacies...
             </p>
           )}
 
           {!loading && pharmacies.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-4 animate-fade-in">
               {pharmacies.map((pharmacy, index) => (
                 <div
                   key={index}
-                  className="bg-gray-100 p-6 rounded-2xl shadow-md hover:shadow-lg transition duration-300"
+                  className="bg-[#f7faff] p-4 rounded-xl shadow flex flex-col md:flex-row md:items-center md:justify-between gap-2 border border-[#e3eaff] hover:shadow-xl hover:scale-[1.02] transition-all duration-200 group"
                 >
-                  <h3 className="text-xl font-bold text-[#0a2e68] mb-2">
-                    {pharmacy.name}
-                  </h3>
-
-                  <p className="text-gray-700 mb-1 flex items-center gap-2">
-                    <FaMapMarkerAlt className="text-[#0a2e68]" />
-                    {pharmacy.address}
-                  </p>
-
-                  {pharmacy.phoneNumber && (
-                    <p className="text-gray-700 mb-1 flex items-center gap-2">
-                      <FaPhoneAlt className="text-[#0a2e68]" />
-                      {pharmacy.phoneNumber}
+                  <div>
+                    <h3 className="text-base font-bold text-[#0a2e68] mb-1 flex items-center gap-1">
+                      <FaMapMarkerAlt className="text-[#c33c54] text-base" />
+                      {pharmacy.name}
+                    </h3>
+                    <p className="text-gray-700 mb-1 flex items-center gap-1 text-xs">
+                      <FaMapMarkerAlt className="text-[#0a2e68]" />
+                      {pharmacy.address}
                     </p>
-                  )}
-
-                  {pharmacy.distance && (
-                    <p className="text-gray-700 mb-3 flex items-center gap-2">
-                      <FaRoute className="text-[#0a2e68]" />
-                      {Math.round(pharmacy.distance)} meters
-                    </p>
-                  )}
-
+                    {pharmacy.phoneNumber && (
+                      <p className="text-gray-700 mb-1 flex items-center gap-1 text-xs">
+                        <FaPhoneAlt className="text-[#0a2e68]" />
+                        {pharmacy.phoneNumber}
+                      </p>
+                    )}
+                    {pharmacy.distance && (
+                      <p className="text-gray-700 flex items-center gap-1 text-xs">
+                        <FaRoute className="text-[#0a2e68]" />
+                        {Math.round(pharmacy.distance)} meters
+                      </p>
+                    )}
+                  </div>
                   <button
                     onClick={() =>
                       window.open(
@@ -166,16 +184,29 @@ function PharmacyLocator() {
                         "_blank"
                       )
                     }
-                    className="inline-flex items-center mt-2 text-white bg-[#0a2e68] hover:bg-[#050b4b] px-4 py-2 rounded-full text-sm"
+                    className="inline-flex items-center text-white bg-[#0a2e68] hover:bg-[#183a7a] px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 gap-1 shadow hover:scale-105 focus:ring-2 focus:ring-[#e3eaff]/50 outline-none"
                   >
-                    Show on Map <SiGooglemaps className="ml-2" />
+                    Map <SiGooglemaps className="ml-1 text-base" />
                   </button>
                 </div>
               ))}
             </div>
           )}
+
+          {!loading && pharmacies.length === 0 && (
+            <div className="text-center text-gray-400 mt-8 animate-fade-in">
+              <p>No pharmacies found near your location yet.</p>
+            </div>
+          )}
         </div>
       </div>
+      {/* Animations CSS */}
+      <style>{`
+        .animate-fade-in { animation: fadeIn 0.7s both; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-bounce { animation: bounce 1.2s infinite alternate; }
+        @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-7px); } }
+      `}</style>
     </section>
   );
 }

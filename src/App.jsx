@@ -26,6 +26,8 @@ import ResetPassword from "./Components/ResetPassword/ResetPassword";
 import AllDrugs from "./Components/AllDrugs/AllDrugs";
 import DrugDetails from "./Components/DrugDetails/DrugDetails";
 import Alternatives from "./Components/Alternatives/Alternatives";
+import PharmacyLocator from "./Components/PharmacyLocator/PharmacyLocator";
+import BarCodeScanner from "./Components/BarCodeScanner/BarCodeScanner";
 
 let routers = createBrowserRouter([
   {
@@ -95,6 +97,22 @@ let routers = createBrowserRouter([
         ),
       },
       {
+        path: "pharmacy-locator",
+        element: (
+          <ProtectedRoute>
+            <PharmacyLocator />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "barcode-scanner",
+        element: (
+          <ProtectedRoute>
+            <BarCodeScanner />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "*",
         element: (
           <ProtectedRoute>
@@ -121,7 +139,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <UserContextProvider>
         <RouterProvider router={routers}></RouterProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </UserContextProvider>
     </QueryClientProvider>
   );

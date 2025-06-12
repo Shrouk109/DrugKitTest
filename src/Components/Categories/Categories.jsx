@@ -14,8 +14,8 @@ export default function Categories({ category }) {
   };
 
   return (
-    <div className="relative bg-white shadow-md border border-gray-200 rounded-lg overflow-hidden group hover:shadow-[0_0_20px_rgba(180,180,180,0.5)] transition-all duration-700">
-      <div className="aspect-[5/3] w-full overflow-hidden bg-gray-100">
+    <div className="relative bg-gray-100 shadow-md border border-gray-200 rounded-2xl overflow-hidden group hover:shadow-[0_0_20px_rgba(180,180,180,0.15)] transition-all duration-700 min-h-[320px] flex flex-col justify-between">
+      <div className="w-full h-64 bg-gray-200 flex items-center justify-center p-0">
         <img
           src={`${base}${category.imageUrl}`}
           alt={category.name}
@@ -29,7 +29,7 @@ export default function Categories({ category }) {
           <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
             <div className="text-center">
               <svg
-                className="w-12 h-12 text-gray-400 mx-auto mb-2"
+                className="w-16 h-16 text-gray-400 mx-auto mb-2"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -52,15 +52,14 @@ export default function Categories({ category }) {
       {/* view details*/}
       <button
         onClick={handleViewDetails}
-        className="absolute top-2 left-2 bg-[var(--primary-color)] text-white px-5 py-2 text-sm rounded-lg opacity-0 
-        group-hover:opacity-100 group-hover:top-1/2 group-hover:left-1/2 
-        group-hover:-translate-x-1/2 group-hover:-translate-y-1/2 
+        className="absolute top-2 left-2 bg-[var(--primary-color)] text-white px-5 py-2 text-sm rounded-lg opacity-0 \
+        group-hover:opacity-100 group-hover:top-1/2 group-hover:left-1/2 \
+        group-hover:-translate-x-1/2 group-hover:-translate-y-1/2 \
         transition-all duration-700 ease-in-out cursor-pointer"
       >
         View Details
       </button>
-
-      <div className="p-3 text-center bg-gray-100 font-semibold text-[var(--primary-color)]">
+      <div className="p-4 text-center bg-gray-100 font-bold text-lg text-[var(--primary-color)]">
         {category.name}
       </div>
     </div>

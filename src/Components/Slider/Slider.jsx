@@ -10,8 +10,9 @@ import {
 } from "react-icons/md";
 import { TbBrandWechat } from "react-icons/tb";
 import { IoMdSearch } from "react-icons/io";
+import { MdOutlineBloodtype } from "react-icons/md";
 
-import { FaPills } from "react-icons/fa";
+// import { FaPills } from "react-icons/fa";
 
 const categories = [
   {
@@ -21,10 +22,16 @@ const categories = [
     icon: <IoMdSearch />,
   },
   {
-    name: "Interaction Checker",
+    name: "Drug Alternatives",
     description:
-      "Enter two medications to check interactions and get safer alternatives instantly.",
-    icon: <FaPills />,
+      "Search by drug name and explore its available substitutes.",
+    icon: <MdOutlineBloodtype />,
+  },
+  {
+    name: "Test Insights & Tips",
+    description:
+      "Just upload your health report to understand your results and get helpful tips.",
+    icon: <MdOutlineBloodtype  />,
   },
   {
     name: "Prescription Scanner",
