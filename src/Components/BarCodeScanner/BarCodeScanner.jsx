@@ -4,6 +4,7 @@ import style from "./BarCodeScanner.module.css";
 // Barcode decoding
 import jsQR from "jsqr";
 import axios from "axios";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 export default function BarCodeScanner() {
   const [imagePreview, setImagePreview] = useState(null);
@@ -14,6 +15,7 @@ export default function BarCodeScanner() {
 
   // Handle image upload and decode barcode via API
   const handleImageUpload = async (e) => {
+    // 1. Reset previous state
     setBarcodeData(null);
     setDrugDetails(null);
     setError("");
@@ -22,31 +24,36 @@ export default function BarCodeScanner() {
     setLoading(true);
     setImagePreview(URL.createObjectURL(file));
     try {
-      // 1. Send image to BarCodeScan API
+      // 2. إرسال الصورة إلى API لاستخراج الباركود
       const formData = new FormData();
       formData.append("file", file);
+      // جلب التوكن من اللوكال ستورج
+      const userToken = localStorage.getItem("userToken");
       const scanRes = await axios.post(
         "https://drugkit.runasp.net/api/Drug/BarCodeScan",
-        formData
+        formData,
+        {
+          headers: {
+            Authorization: userToken ? `Bearer ${userToken}` : undefined,
+          },
+        }
       );
+      // 3. استخراج الباركود من الاستجابة
       const barcode =
         scanRes.data?.barCode || scanRes.data?.barcode || scanRes.data;
+      console.log("Barcode:", barcode);
       if (!barcode) {
         setError("No barcode detected in the image.");
         setLoading(false);
         return;
       }
       setBarcodeData(barcode);
-      // 2. Get drug details by barcode
-      const detailsRes = await axios.get(
-        `https://drugkit.runasp.net/api/Drug/GetDrugDetailsByBarCode__${barcode}`
-      );
-      setDrugDetails(detailsRes.data);
+      // تم حذف جلب تفاصيل الدواء بناءً على الباركود
     } catch (err) {
       setError(
         err?.response?.data?.message ||
           err?.response?.data ||
-          "Failed to extract barcode or fetch drug details."
+          "Failed to extract barcode."
       );
       setBarcodeData(null);
       setDrugDetails(null);
@@ -143,17 +150,79 @@ export default function BarCodeScanner() {
           </div>
         )}
         {barcodeData && (
-          <div className="w-full bg-[#f7faff] rounded-xl p-4 border border-[#e3eaff] text-center animate-fade-in delay-200">
+          <div className="w-full flex flex-col items-center">
             <h2 className="font-bold text-[#0a2e68] mb-2">Barcode</h2>
-            <div className="text-gray-700 break-words">{barcodeData}</div>
+            {typeof barcodeData === "object" ? (
+              <pre className="text-gray-700 break-words">
+                {JSON.stringify(barcodeData, null, 2)}
+              </pre>
+            ) : (
+              <div className="text-gray-700 break-words">{barcodeData}</div>
+            )}
           </div>
         )}
         {drugDetails && (
-          <div className="w-full bg-[#f7faff] rounded-xl p-4 border border-[#e3eaff] text-center animate-fade-in delay-300">
-            <h2 className="font-bold text-[#0a2e68] mb-2">Drug Details</h2>
-            <pre className="text-gray-700 text-left whitespace-pre-wrap break-words text-xs md:text-sm">
-              {JSON.stringify(drugDetails, null, 2)}
-            </pre>
+          <div className="w-full flex justify-center animate-fade-in delay-300">
+            <Card className="w-full max-w-sm overflow-hidden">
+              <div className="w-full bg-gradient-to-r from-[#e3eaff] to-[#f7faff] flex justify-center items-center p-4">
+                {drugDetails.imageUrl ? (
+                  <img
+                    src={drugDetails.imageUrl}
+                    alt={drugDetails.name}
+                    className="w-24 h-24 object-contain rounded-lg border border-[#e3eaff] bg-white shadow"
+                    onError={(e) => (e.target.style.display = "none")}
+                  />
+                ) : (
+                  <div className="w-24 h-24 flex items-center justify-center bg-[#f7faff] rounded-lg border border-[#e3eaff] text-gray-400 text-xs">
+                    No Image
+                  </div>
+                )}
+              </div>
+              <CardHeader className="items-center">
+                <CardTitle className="mb-1 text-center">
+                  {drugDetails.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center gap-2">
+                <div className="text-gray-600 text-sm mb-2 text-center min-h-[32px]">
+                  {drugDetails.description}
+                </div>
+                <div className="flex flex-col gap-1 w-full text-sm">
+                  <div className="flex justify-between w-full">
+                    <span className="font-semibold text-[#0a2e68]">
+                      Company:
+                    </span>{" "}
+                    <span>{drugDetails.company}</span>
+                  </div>
+                  <div className="flex justify-between w-full">
+                    <span className="font-semibold text-[#0a2e68]">
+                      Barcode:
+                    </span>{" "}
+                    <span>{drugDetails.barcode}</span>
+                  </div>
+                  <div className="flex justify-between w-full">
+                    <span className="font-semibold text-[#0a2e68]">Price:</span>{" "}
+                    <span>{drugDetails.price} EGP</span>
+                  </div>
+                  <div className="flex justify-between w-full">
+                    <span className="font-semibold text-[#0a2e68]">
+                      Dosage Form:
+                    </span>{" "}
+                    <span>{drugDetails.dosage_form}</span>
+                  </div>
+                  {drugDetails.sideEffects && (
+                    <div className="flex flex-col w-full">
+                      <span className="font-semibold text-[#0a2e68]">
+                        Side Effects:
+                      </span>
+                      <span className="text-gray-700">
+                        {drugDetails.sideEffects}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
         {error && (

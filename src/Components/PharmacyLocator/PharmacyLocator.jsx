@@ -107,17 +107,17 @@ function PharmacyLocator() {
   };
 
   return (
-    <section className="py-4 bg-[#f7faff] min-h-screen flex items-center justify-center transition-all duration-500">
+    <section className="py-4 bg-[#f7faff] min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center w-full">
         <div className="bg-white  p-5 md:p-8 rounded-2xl shadow-lg w-full max-w-3xl border border-[#e3eaff] mx-auto">
           <div className="flex flex-col items-center mb-8">
             <div className="bg-[#0a2e68] rounded-full p-3 mb-3 shadow">
               <PiMapPinAreaBold className="text-3xl md:text-4xl text-white" />
             </div>
-            <h1 className="text-xl md:text-2xl font-bold text-[#0a2e68] mb-1 animate-fade-in">
+            <h1 className="text-xl md:text-2xl font-bold text-[#0a2e68] mb-1">
               Find Nearby Pharmacies
             </h1>
-            <p className="text-gray-500 text-sm md:text-base mb-2 text-center max-w-md animate-fade-in delay-100">
+            <p className="text-gray-500 text-sm md:text-base mb-2 text-center max-w-md">
               Locate the closest pharmacies to you and get directions easily.
             </p>
           </div>
@@ -129,13 +129,13 @@ function PharmacyLocator() {
               className="bg-[#0a2e68] hover:bg-[#183a7a] text-white text-base font-semibold py-3 px-8 rounded-full transition-all duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow"
             >
               {loading ? (
-                <span className="flex items-center gap-2 justify-center animate-pulse">
+                <span className="flex items-center gap-2 justify-center">
                   <ImSpinner2 className="animate-spin text-lg" />
                   Locating...
                 </span>
               ) : (
                 <>
-                  <PiMapPinAreaBold className="text-lg animate-bounce" />
+                  <PiMapPinAreaBold className="text-lg" />
                   Locate Me
                 </>
               )}
@@ -143,17 +143,17 @@ function PharmacyLocator() {
           </div>
 
           {loading && (
-            <p className="text-center text-[#0a2e68] mb-4 animate-fade-in font-medium text-sm">
+            <p className="text-center text-[#0a2e68] mb-4 animate-pulse font-medium text-sm">
               Fetching nearby pharmacies...
             </p>
           )}
 
           {!loading && pharmacies.length > 0 && (
-            <div className="space-y-4 animate-fade-in">
+            <div className="space-y-4">
               {pharmacies.map((pharmacy, index) => (
                 <div
                   key={index}
-                  className="bg-[#f7faff] p-4 rounded-xl shadow flex flex-col md:flex-row md:items-center md:justify-between gap-2 border border-[#e3eaff] hover:shadow-xl hover:scale-[1.02] transition-all duration-200 group"
+                  className="bg-[#f7faff] p-4 rounded-xl shadow flex flex-col md:flex-row md:items-center md:justify-between gap-2 border border-[#e3eaff]"
                 >
                   <div>
                     <h3 className="text-base font-bold text-[#0a2e68] mb-1 flex items-center gap-1">
@@ -184,7 +184,7 @@ function PharmacyLocator() {
                         "_blank"
                       )
                     }
-                    className="inline-flex items-center text-white bg-[#0a2e68] hover:bg-[#183a7a] px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 gap-1 shadow hover:scale-105 focus:ring-2 focus:ring-[#e3eaff]/50 outline-none"
+                    className="inline-flex items-center text-white bg-[#0a2e68] hover:bg-[#183a7a] px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 gap-1 shadow"
                   >
                     Map <SiGooglemaps className="ml-1 text-base" />
                   </button>
@@ -194,19 +194,12 @@ function PharmacyLocator() {
           )}
 
           {!loading && pharmacies.length === 0 && (
-            <div className="text-center text-gray-400 mt-8 animate-fade-in">
+            <div className="text-center text-gray-400 mt-8">
               <p>No pharmacies found near your location yet.</p>
             </div>
           )}
         </div>
       </div>
-      {/* Animations CSS */}
-      <style>{`
-        .animate-fade-in { animation: fadeIn 0.7s both; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .animate-bounce { animation: bounce 1.2s infinite alternate; }
-        @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-7px); } }
-      `}</style>
     </section>
   );
 }
