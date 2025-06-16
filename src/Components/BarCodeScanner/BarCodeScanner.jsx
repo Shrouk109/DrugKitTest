@@ -64,22 +64,6 @@ export default function BarCodeScanner() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#f7faff] to-[#e3eaff] p-4 animate-fade-in">
       <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md flex flex-col items-center gap-6 border border-[#e3eaff] relative overflow-hidden">
-        {/* Animated barcode icon */}
-        {/* <div className="absolute -top-8 right-8 animate-bounce-slow z-0 opacity-10 pointer-events-none">
-          <svg
-            width="80"
-            height="80"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="#0a2e68"
-          >
-            <rect x="3" y="5" width="2" height="14" rx="1" fill="#0a2e68" />
-            <rect x="7" y="5" width="2" height="14" rx="1" fill="#c33c54" />
-            <rect x="11" y="5" width="2" height="14" rx="1" fill="#0a2e68" />
-            <rect x="15" y="5" width="2" height="14" rx="1" fill="#c33c54" />
-            <rect x="19" y="5" width="2" height="14" rx="1" fill="#0a2e68" />
-          </svg>
-        </div> */}
         <h1 className="text-3xl font-bold text-[#0a2e68] mb-2 animate-slide-down">
           BarCode Scanner
         </h1>
@@ -150,76 +134,254 @@ export default function BarCodeScanner() {
           </div>
         )}
         {barcodeData && (
-          <div className="w-full flex flex-col items-center">
-            <h2 className="font-bold text-[#0a2e68] mb-2">Barcode</h2>
-            {typeof barcodeData === "object" ? (
-              <pre className="text-gray-700 break-words">
-                {JSON.stringify(barcodeData, null, 2)}
-              </pre>
-            ) : (
-              <div className="text-gray-700 break-words">{barcodeData}</div>
-            )}
+          <div className="w-full flex flex-col items-center animate-fade-in delay-200">
+            <div className="w-full max-w-sm bg-gradient-to-br from-[#f7faff] to-[#e3eaff] rounded-2xl shadow-xl border border-[#e3eaff] p-6 flex flex-col items-center gap-4">
+              <div className="flex items-center gap-3 mb-2">
+                <svg
+                  width="28"
+                  height="28"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#0a2e68"
+                >
+                  <rect
+                    x="3"
+                    y="6"
+                    width="2"
+                    height="12"
+                    rx="1"
+                    fill="#0a2e68"
+                  />
+                  <rect
+                    x="7"
+                    y="4"
+                    width="2"
+                    height="16"
+                    rx="1"
+                    fill="#0a2e68"
+                  />
+                  <rect
+                    x="11"
+                    y="6"
+                    width="2"
+                    height="12"
+                    rx="1"
+                    fill="#0a2e68"
+                  />
+                  <rect
+                    x="15"
+                    y="4"
+                    width="2"
+                    height="16"
+                    rx="1"
+                    fill="#0a2e68"
+                  />
+                  <rect
+                    x="19"
+                    y="6"
+                    width="2"
+                    height="12"
+                    rx="1"
+                    fill="#0a2e68"
+                  />
+                </svg>
+                <h2 className="font-bold text-[#0a2e68] text-xl">
+                  Barcode Data
+                </h2>
+              </div>
+              <div className="w-full bg-white rounded-lg px-4 py-2 border border-[#e3eaff] text-center text-gray-800 text-base font-mono shadow-sm">
+                {typeof barcodeData === "object" ? (
+                  <pre className="break-words whitespace-pre-wrap text-sm">
+                    {JSON.stringify(barcodeData, null, 2)}
+                  </pre>
+                ) : (
+                  <span className="break-words text-lg">{barcodeData}</span>
+                )}
+              </div>
+            </div>
           </div>
         )}
         {drugDetails && (
           <div className="w-full flex justify-center animate-fade-in delay-300">
-            <Card className="w-full max-w-sm overflow-hidden">
-              <div className="w-full bg-gradient-to-r from-[#e3eaff] to-[#f7faff] flex justify-center items-center p-4">
-                {drugDetails.imageUrl ? (
-                  <img
-                    src={drugDetails.imageUrl}
-                    alt={drugDetails.name}
-                    className="w-24 h-24 object-contain rounded-lg border border-[#e3eaff] bg-white shadow"
-                    onError={(e) => (e.target.style.display = "none")}
-                  />
-                ) : (
-                  <div className="w-24 h-24 flex items-center justify-center bg-[#f7faff] rounded-lg border border-[#e3eaff] text-gray-400 text-xs">
-                    No Image
-                  </div>
-                )}
-              </div>
-              <CardHeader className="items-center">
-                <CardTitle className="mb-1 text-center">
-                  {drugDetails.name}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center gap-2">
-                <div className="text-gray-600 text-sm mb-2 text-center min-h-[32px]">
-                  {drugDetails.description}
-                </div>
-                <div className="flex flex-col gap-1 w-full text-sm">
-                  <div className="flex justify-between w-full">
-                    <span className="font-semibold text-[#0a2e68]">
-                      Company:
-                    </span>{" "}
-                    <span>{drugDetails.company}</span>
-                  </div>
-                  <div className="flex justify-between w-full">
-                    <span className="font-semibold text-[#0a2e68]">
-                      Barcode:
-                    </span>{" "}
-                    <span>{drugDetails.barcode}</span>
-                  </div>
-                  <div className="flex justify-between w-full">
-                    <span className="font-semibold text-[#0a2e68]">Price:</span>{" "}
-                    <span>{drugDetails.price} EGP</span>
-                  </div>
-                  <div className="flex justify-between w-full">
-                    <span className="font-semibold text-[#0a2e68]">
-                      Dosage Form:
-                    </span>{" "}
-                    <span>{drugDetails.dosage_form}</span>
-                  </div>
-                  {drugDetails.sideEffects && (
-                    <div className="flex flex-col w-full">
-                      <span className="font-semibold text-[#0a2e68]">
-                        Side Effects:
-                      </span>
-                      <span className="text-gray-700">
-                        {drugDetails.sideEffects}
-                      </span>
+            <Card className="w-full max-w-sm overflow-hidden shadow-2xl rounded-2xl border border-[#e3eaff] bg-gradient-to-br from-[#f7faff] to-[#e3eaff]">
+              <div className="w-full flex flex-col items-center p-6 pb-2">
+                <div className="relative mb-2">
+                  {drugDetails.imageUrl ? (
+                    <img
+                      src={drugDetails.imageUrl}
+                      alt={drugDetails.name}
+                      className="w-24 h-24 object-contain rounded-xl border border-[#e3eaff] bg-white shadow"
+                      onError={(e) => (e.target.style.display = "none")}
+                    />
+                  ) : (
+                    <div className="w-24 h-24 flex items-center justify-center bg-[#f7faff] rounded-xl border border-[#e3eaff] text-gray-400 text-xs">
+                      <svg
+                        width="32"
+                        height="32"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="#b0b8d1"
+                      >
+                        <rect
+                          x="4"
+                          y="4"
+                          width="16"
+                          height="16"
+                          rx="4"
+                          stroke="#b0b8d1"
+                          strokeWidth="2"
+                        />
+                        <path
+                          d="M8 16l2.5-3 2.5 3 3.5-5 3.5 5"
+                          stroke="#b0b8d1"
+                          strokeWidth="2"
+                        />
+                      </svg>
                     </div>
                   )}
+                </div>
+                <h3 className="font-bold text-[#0a2e68] text-lg mb-1 text-center w-full truncate">
+                  {drugDetails.name || (
+                    <span className="italic text-gray-400">No name</span>
+                  )}
+                </h3>
+                <p className="text-gray-600 text-xs text-center mb-2 min-h-[32px]">
+                  {drugDetails.description || (
+                    <span className="italic text-gray-400">
+                      No description available.
+                    </span>
+                  )}
+                </p>
+              </div>
+              <CardContent className="flex flex-col gap-3 px-6 pb-6">
+                <div className="flex items-center justify-between w-full text-sm py-1 border-b border-[#e3eaff] last:border-b-0">
+                  <span className="font-semibold text-[#0a2e68] flex items-center gap-1">
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="#0a2e68"
+                    >
+                      <path
+                        d="M12 2a10 10 0 100 20 10 10 0 000-20z"
+                        strokeWidth="2"
+                      />
+                      <path d="M12 6v6l4 2" strokeWidth="2" />
+                    </svg>
+                    Company:
+                  </span>
+                  <span>
+                    {drugDetails.company || (
+                      <span className="italic text-gray-400">No company</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between w-full text-sm py-1 border-b border-[#e3eaff] last:border-b-0">
+                  <span className="font-semibold text-[#0a2e68] flex items-center gap-1">
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="#0a2e68"
+                    >
+                      <rect
+                        x="4"
+                        y="4"
+                        width="16"
+                        height="16"
+                        rx="4"
+                        strokeWidth="2"
+                      />
+                    </svg>
+                    Barcode:
+                  </span>
+                  <span>
+                    {drugDetails.barcode || (
+                      <span className="italic text-gray-400">No barcode</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between w-full text-sm py-1 border-b border-[#e3eaff] last:border-b-0">
+                  <span className="font-semibold text-[#0a2e68] flex items-center gap-1">
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="#0a2e68"
+                    >
+                      <path d="M12 8v8" strokeWidth="2" />
+                      <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                    </svg>
+                    Price:
+                  </span>
+                  <span>
+                    {drugDetails.price ? (
+                      `${drugDetails.price} EGP`
+                    ) : (
+                      <span className="italic text-gray-400">No price</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between w-full text-sm py-1 border-b border-[#e3eaff] last:border-b-0">
+                  <span className="font-semibold text-[#0a2e68] flex items-center gap-1">
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="#0a2e68"
+                    >
+                      <rect
+                        x="6"
+                        y="6"
+                        width="12"
+                        height="12"
+                        rx="2"
+                        strokeWidth="2"
+                      />
+                    </svg>
+                    Dosage Form:
+                  </span>
+                  <span>
+                    {drugDetails.dosage_form || (
+                      <span className="italic text-gray-400">No form</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex flex-col w-full text-sm pt-2">
+                  <span className="font-semibold text-[#0a2e68] mb-1 flex items-center gap-1">
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="#0a2e68"
+                    >
+                      <path d="M12 8v8" strokeWidth="2" />
+                      <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                    </svg>
+                    Side Effects:
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {Array.isArray(drugDetails.sideEffects) &&
+                    drugDetails.sideEffects.length > 0 ? (
+                      drugDetails.sideEffects.map((effect, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-block bg-[#e3eaff] rounded px-2 py-0.5 text-[#0a2e68] text-xs shadow-sm"
+                        >
+                          {effect}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="italic text-gray-400">
+                        No known side effects.
+                      </span>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
