@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import style from "./BarCodeScanner.module.css";
 // Barcode decoding
-import jsQR from "jsqr";
 import axios from "axios";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
@@ -48,6 +47,7 @@ export default function BarCodeScanner() {
         return;
       }
       setBarcodeData(barcode);
+      setDrugDetails(scanRes.data[0]);
       // تم حذف جلب تفاصيل الدواء بناءً على الباركود
     } catch (err) {
       setError(
@@ -133,7 +133,7 @@ export default function BarCodeScanner() {
             Processing...
           </div>
         )}
-        {barcodeData && (
+        {/* {barcodeData && (
           <div className="w-full flex flex-col items-center animate-fade-in delay-200">
             <div className="w-full max-w-sm bg-gradient-to-br from-[#f7faff] to-[#e3eaff] rounded-2xl shadow-xl border border-[#e3eaff] p-6 flex flex-col items-center gap-4">
               <div className="flex items-center gap-3 mb-2">
@@ -200,7 +200,7 @@ export default function BarCodeScanner() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
         {drugDetails && (
           <div className="w-full flex justify-center animate-fade-in delay-300">
             <Card className="w-full max-w-sm overflow-hidden shadow-2xl rounded-2xl border border-[#e3eaff] bg-gradient-to-br from-[#f7faff] to-[#e3eaff]">
@@ -208,7 +208,9 @@ export default function BarCodeScanner() {
                 <div className="relative mb-2">
                   {drugDetails.imageUrl ? (
                     <img
-                      src={drugDetails.imageUrl}
+                      src={`https://drugkit.runasp.net/Images/DrugImages/${encodeURIComponent(
+                        drugDetails.imageUrl.split("/").at(-1)
+                      )}`}
                       alt={drugDetails.name}
                       className="w-24 h-24 object-contain rounded-xl border border-[#e3eaff] bg-white shadow"
                       onError={(e) => (e.target.style.display = "none")}
@@ -222,20 +224,14 @@ export default function BarCodeScanner() {
                         viewBox="0 0 24 24"
                         stroke="#b0b8d1"
                       >
-                        <rect
-                          x="4"
-                          y="4"
-                          width="16"
-                          height="16"
-                          rx="4"
-                          stroke="#b0b8d1"
-                          strokeWidth="2"
-                        />
                         <path
-                          d="M8 16l2.5-3 2.5 3 3.5-5 3.5 5"
-                          stroke="#b0b8d1"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                           strokeWidth="2"
+                          d="M9.75 3v5.25M21 12a9 9 0 1 1-6.49-8.649"
                         />
+                        <circle cx="12" cy="9" r="2" strokeWidth="2" />
+                        <path d="M12 14v5l3-3m-6 0l3 3" strokeWidth="2" />
                       </svg>
                     </div>
                   )}
@@ -264,10 +260,11 @@ export default function BarCodeScanner() {
                       stroke="#0a2e68"
                     >
                       <path
-                        d="M12 2a10 10 0 100 20 10 10 0 000-20z"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         strokeWidth="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0h3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                       />
-                      <path d="M12 6v6l4 2" strokeWidth="2" />
                     </svg>
                     Company:
                   </span>
@@ -286,14 +283,17 @@ export default function BarCodeScanner() {
                       viewBox="0 0 24 24"
                       stroke="#0a2e68"
                     >
-                      <rect
-                        x="4"
-                        y="4"
-                        width="16"
-                        height="16"
-                        rx="4"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         strokeWidth="2"
+                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7zm0 0V5a2 2 0 012-2h6l2 2h6a2 2 0 012 2v2M7 13h10M7 17h7"
                       />
+                      <rect x="3" y="9" width="2" height="8" fill="#0a2e68" />
+                      <rect x="6" y="7" width="2" height="10" fill="#0a2e68" />
+                      <rect x="10" y="9" width="2" height="8" fill="#0a2e68" />
+                      <rect x="14" y="7" width="2" height="10" fill="#0a2e68" />
+                      <rect x="18" y="9" width="2" height="8" fill="#0a2e68" />
                     </svg>
                     Barcode:
                   </span>
@@ -312,8 +312,12 @@ export default function BarCodeScanner() {
                       viewBox="0 0 24 24"
                       stroke="#0a2e68"
                     >
-                      <path d="M12 8v8" strokeWidth="2" />
-                      <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                      />
                     </svg>
                     Price:
                   </span>
@@ -334,13 +338,32 @@ export default function BarCodeScanner() {
                       viewBox="0 0 24 24"
                       stroke="#0a2e68"
                     >
-                      <rect
-                        x="6"
-                        y="6"
-                        width="12"
-                        height="12"
-                        rx="2"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         strokeWidth="2"
+                        d="M9.75 3v5.25M21 12a9 9 0 1 1-6.49-8.649"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="3"
+                        strokeWidth="2"
+                        fill="#0a2e68"
+                      />
+                      <circle
+                        cx="8"
+                        cy="18"
+                        r="2"
+                        strokeWidth="2"
+                        fill="#0a2e68"
+                      />
+                      <circle
+                        cx="16"
+                        cy="18"
+                        r="2"
+                        strokeWidth="2"
+                        fill="#0a2e68"
                       />
                     </svg>
                     Dosage Form:
@@ -360,8 +383,12 @@ export default function BarCodeScanner() {
                       viewBox="0 0 24 24"
                       stroke="#0a2e68"
                     >
-                      <path d="M12 8v8" strokeWidth="2" />
-                      <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                      />
                     </svg>
                     Side Effects:
                   </span>
